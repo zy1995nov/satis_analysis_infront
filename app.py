@@ -21,7 +21,7 @@ except Exception as e:
     IMPORT_ERR = e      # 保存异常信息供前端提示
 
 # ---------------------- 页面标题 ----------------------
-st.title("📊 满意度波动归因分析工具 · GUI 版")
+st.title("📊 满意度波动归因分析工具")
 
 with st.expander("使用说明", expanded=False):
     st.markdown(
