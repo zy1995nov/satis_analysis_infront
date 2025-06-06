@@ -1,9 +1,9 @@
 import streamlit as st
 
-# Streamlit 规定：set_page_config 必须是首个 Streamlit 调用
+
 st.set_page_config(page_title="满意度波动归因分析", page_icon="📊", layout="wide")
 
-# ---------------------- 依赖 ----------------------
+# 依赖 
 import pandas as pd
 import numpy as np
 from io import BytesIO
@@ -12,7 +12,7 @@ import tempfile
 import traceback
 import os
 
-# ----------------- 尝试导入核心分析函数 -----------------
+# 核心分析函数
 try:
     from satis_analysis import run_analysis
     IMPORT_ERR = None  # 导入成功
@@ -20,7 +20,7 @@ except Exception as e:
     run_analysis = None  # 保证后续引用不报错
     IMPORT_ERR = e      # 保存异常信息供前端提示
 
-# ---------------------- 页面标题 ----------------------
+# 页面标题 
 st.title("📊 满意度波动归因分析工具")
 
 with st.expander("使用说明", expanded=False):
@@ -37,7 +37,7 @@ with st.expander("使用说明", expanded=False):
         unsafe_allow_html=True,
     )
 
-# ----------------- 左侧栏输入 -----------------
+#  左侧栏输入 
 st.sidebar.header("⚙️ 参数设置")
 
 uploaded_file = st.sidebar.file_uploader(
@@ -67,16 +67,16 @@ start_btn = st.sidebar.button(
     disabled=(uploaded_file is None) or (run_analysis is None),
 )
 
-# ----------------- 主逻辑 -----------------
+# 主逻辑 
 if start_btn:
     try:
-        # ------ 将上传文件写入临时文件，供 run_analysis 使用 ------
+        # 将上传文件写入临时文件，供 run_analysis 使用 
         with st.spinner("读取上传数据 …"):
             tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
             tmp_file.write(uploaded_file.read())
             tmp_file.flush()
             tmp_path = tmp_file.name
-            tmp_file.close()  # ✅ Windows 上必须先关闭句柄才能后续删除
+            tmp_file.close()  # ✅ Windows上必须先关闭句柄才能后续删除
 
         # 解析维度组合
         core_dims = [seg.strip().split(",") for seg in dims_str.split(";") if seg.strip()]
@@ -93,7 +93,7 @@ if start_btn:
         st.success("参数校验通过，开始后台分析 …")
         progress_bar = st.progress(0.01)
 
-        # ------ 调用核心分析函数 ------
+        # 调用核心分析函数
         results = run_analysis(
             data_path      = tmp_path,
             cur_start      = cur_start_str,
@@ -107,7 +107,7 @@ if start_btn:
         )
         progress_bar.progress(1.0)
 
-        # ------ 展示结果 ------
+        # 展示结果
         if not results:
             st.warning("分析返回空结果，请检查数据或参数设置。")
         else:
