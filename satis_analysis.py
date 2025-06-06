@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-# ---------------- 方法2：替代分配 ----------------
+# 方法1：替代分配（基于贡献值方法的补充）
 def add_replacement_quality(df: pd.DataFrame) -> pd.DataFrame:
     """
     替代分析：评价占比上升的队列 vs 被替代的平均质量
@@ -24,7 +24,7 @@ def add_replacement_quality(df: pd.DataFrame) -> pd.DataFrame:
     df.loc[grow.index, '净替代质量差'] = df.loc[grow.index, '现期服务满意度'] - s_replaced
     return df
 
-# ---------------- 留一法净影响 ----------------
+# 留一法净影响
 def add_leave_one_out(df: pd.DataFrame) -> pd.DataFrame:
     """
     留一法净影响 = (剔除后现期满意度 - 基期整体) - (原现期整体 - 基期整体)
@@ -44,7 +44,7 @@ def add_leave_one_out(df: pd.DataFrame) -> pd.DataFrame:
     df['留一法净影响'] = (S_cur_excl - S_base_all) - (S_cur_all - S_base_all)
     return df
 
-# ---------------- 方法1：运营标签 ----------------
+# 方法1：运营标签 
 def add_op_tag(df: pd.DataFrame, delta_thresh=0.005, replace_thresh=0.01, dominance_ratio=1.5) -> pd.DataFrame:
     ΔS = df['服务满意度差值']
     ΔW = df['评价权重差值']
@@ -104,7 +104,7 @@ def add_op_tag(df: pd.DataFrame, delta_thresh=0.005, replace_thresh=0.01, domina
     return df
 
 
-# ---------------- 正负缩放 ----------------
+# 正负缩放 
 def sign_split_compress(df):
     """
     对影响值进行正负缩放，确保结果闭合
@@ -126,7 +126,7 @@ def sign_split_compress(df):
     df['转化影响值'] = np.round(arr, 6)
     return df
 
-# ---------------- 核心分析 ----------------
+# 主程序
 def zy_satis_analy(cur_df, base_df, dims, min_eva, enable_method2):
     """
     核心分析逻辑：二阶分解 + 替代分析 + 留一法
@@ -165,7 +165,7 @@ def zy_satis_analy(cur_df, base_df, dims, min_eva, enable_method2):
 
     return g.sort_values('总影响值', key=abs, ascending=False)
 
-# ---------------- Notebook接口 ----------------
+# - Notebook接口
 def run_analysis(data_path, cur_start, cur_end,
                  base_start, base_end, core_dims,
                  min_eva=0, excel_out="result.xlsx",
